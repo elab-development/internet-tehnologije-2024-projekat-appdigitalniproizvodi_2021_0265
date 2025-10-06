@@ -1,0 +1,10 @@
+# Ignoriši fajl sa planom za Cursor
+CONTEXT.md
+
+# Laravel-specifični fajlovi
+/backend/vendor/
+/backend/node_modules/
+/backend/.env
+
+# Frontend-specifični fajlovi
+/frontend/node_modules/
