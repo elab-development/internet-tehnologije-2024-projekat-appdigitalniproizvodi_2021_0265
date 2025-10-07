@@ -20,12 +20,14 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     
-    
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::put('/products/{product}', [ProductController::class, 'update']);
-    Route::post('/products/{product}', [ProductController::class, 'update']);
-    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
-    
-    // Purchase routes
+    // Purchase routes (for authenticated users)
     Route::post('/products/{product}/purchase', [PurchaseController::class, 'store']);
+    
+    // Admin routes (require admin role)
+    Route::middleware('admin')->group(function () {
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::post('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    });
 });
