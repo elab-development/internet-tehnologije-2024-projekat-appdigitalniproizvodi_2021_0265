@@ -7,6 +7,7 @@ use App\Models\Purchase;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
@@ -61,5 +62,31 @@ class PurchaseController extends Controller
             'message' => 'Purchase created successfully',
             'data' => new PurchaseResource($purchase)
         ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Download the original file of a purchased product.
+     */
+    public function download(Request $request, Purchase $purchase)
+    {
+        // SECURITY: Check if the purchase belongs to the currently authenticated user
+        if ($purchase->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Nemate pravo da preuzmete ovaj fajl.'
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        // Get the original file path through the product relationship
+        $filePath = $purchase->product->original_file_path;
+
+        // Check if the file exists
+        if (!Storage::disk('public')->exists($filePath)) {
+            return response()->json([
+                'message' => 'Fajl nije pronađen.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Return the file as a download response
+        return Storage::disk('public')->download($filePath);
     }
 }

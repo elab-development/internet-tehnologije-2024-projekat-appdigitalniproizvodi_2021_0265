@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Purchase routes (for authenticated users)
     Route::get('/my-purchases', [PurchaseController::class, 'index']);
+    Route::get('/my-purchases/{purchase}/download', [PurchaseController::class, 'download']);
     Route::post('/products/{product}/purchase', [PurchaseController::class, 'store']);
     
     // Admin routes (require admin role)
