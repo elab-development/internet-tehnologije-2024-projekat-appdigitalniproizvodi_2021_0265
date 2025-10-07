@@ -21,9 +21,7 @@ class Product extends Model
         'price' => 'decimal:2',
     ];
 
-    /**
-     * Get the purchases for the product.
-     */
+    
     public function purchases()
     {
         return $this->hasMany(Purchase::class);

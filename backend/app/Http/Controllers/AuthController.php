@@ -12,9 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a new user
-     */
+    
     public function register(Request $request)
     {
         $request->validate([
@@ -27,7 +25,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user', // Registracija kreira korisnike samo sa 'user' ulogom
+            'role' => 'user', //da mogu da se reg samo korisnici koji imaju user ulogu
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -40,9 +38,7 @@ class AuthController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Login user
-     */
+    
     public function login(Request $request)
     {
         $request->validate([
@@ -67,9 +63,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Logout user
-     */
+    
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -79,9 +73,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Get authenticated user
-     */
+    
     public function me(Request $request)
     {
         return response()->json([

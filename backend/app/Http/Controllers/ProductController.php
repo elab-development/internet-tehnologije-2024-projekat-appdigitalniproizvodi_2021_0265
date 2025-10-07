@@ -4,14 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $imageUploadService;
+
+    public function __construct(ImageUploadService $imageUploadService)
+    {
+        $this->imageUploadService = $imageUploadService;
+    }
+
+
     public function index()
     {
         $products = Product::paginate(15);
@@ -19,51 +26,105 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+   
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        $product = Product::create($request->all());
+        $productData = $request->only(['name', 'description', 'price']);
+
+        
+        if ($request->hasFile('image')) {
+            $imagePaths = $this->imageUploadService->handleImageUpload($request->file('image'));
+            $productData['original_file_path'] = $imagePaths['original'];
+            $productData['preview_file_path'] = $imagePaths['preview'];
+        }
+
+        $product = Product::create($productData);
 
         return new ProductResource($product);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Product $product)
     {
         return new ProductResource($product);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+   
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'price' => 'sometimes|numeric|min:0',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'description' => 'sometimes|string',
+                'price' => 'sometimes|numeric|min:0',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg|max:5120',
+            ]);
 
-        $product->update($request->all());
+            $productData = $request->only(['name', 'description', 'price']);
 
-        return new ProductResource($product);
+            
+            \Log::info('Request data: ' . json_encode($request->all()));
+            \Log::info('Request files: ' . json_encode($request->allFiles()));
+            \Log::info('Has file image: ' . ($request->hasFile('image') ? 'YES' : 'NO'));
+            
+            
+            if ($request->hasFile('image')) {
+                \Log::info('Image file detected: ' . $request->file('image')->getClientOriginalName());
+                
+                
+                if ($product->original_file_path && Storage::disk('public')->exists($product->original_file_path)) {
+                    Storage::disk('public')->delete($product->original_file_path);
+                    \Log::info('Deleted old original: ' . $product->original_file_path);
+                }
+                if ($product->preview_file_path && Storage::disk('public')->exists($product->preview_file_path)) {
+                    Storage::disk('public')->delete($product->preview_file_path);
+                    \Log::info('Deleted old preview: ' . $product->preview_file_path);
+                }
+
+                
+                \Log::info('Calling ImageUploadService...');
+                $imagePaths = $this->imageUploadService->handleImageUpload($request->file('image'));
+                \Log::info('ImageUploadService returned: ' . json_encode($imagePaths));
+                
+                $productData['original_file_path'] = $imagePaths['original'];
+                $productData['preview_file_path'] = $imagePaths['preview'];
+            } else {
+                \Log::info('No image file provided, keeping existing paths');
+                
+                $productData['original_file_path'] = $product->original_file_path;
+                $productData['preview_file_path'] = $product->preview_file_path;
+            }
+
+            $product->update($productData);
+
+            return new ProductResource($product);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Update failed: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Product $product)
     {
+        
+        if ($product->original_file_path && Storage::disk('public')->exists($product->original_file_path)) {
+            Storage::disk('public')->delete($product->original_file_path);
+        }
+        if ($product->preview_file_path && Storage::disk('public')->exists($product->preview_file_path)) {
+            Storage::disk('public')->delete($product->preview_file_path);
+        }
+
         $product->delete();
 
         return response()->json([
