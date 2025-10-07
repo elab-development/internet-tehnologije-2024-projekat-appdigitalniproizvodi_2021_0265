@@ -29,6 +29,20 @@ class PurchaseController extends Controller
     }
 
     /**
+     * Display a listing of all purchases (admin only).
+     */
+    public function getAllPurchases()
+    {
+        // Get all purchases sorted by latest first with user and product data
+        $purchases = Purchase::latest()
+            ->with(['user', 'product'])
+            ->get();
+
+        // Return the purchases formatted through PurchaseResource collection
+        return PurchaseResource::collection($purchases);
+    }
+
+    /**
      * Store a newly created purchase in storage.
      */
     public function store(Request $request, Product $product)
