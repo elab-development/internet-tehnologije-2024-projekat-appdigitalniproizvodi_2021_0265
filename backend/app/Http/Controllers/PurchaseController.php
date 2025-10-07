@@ -11,6 +11,24 @@ use Illuminate\Http\Response;
 class PurchaseController extends Controller
 {
     /**
+     * Display a listing of the user's purchases.
+     */
+    public function index(Request $request)
+    {
+        // Get the currently authenticated user
+        $user = $request->user();
+
+        // Find all purchases belonging to this user with product data
+        $purchases = Purchase::where('user_id', $user->id)
+            ->with('product')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Return the purchases formatted through PurchaseResource collection
+        return PurchaseResource::collection($purchases);
+    }
+
+    /**
      * Store a newly created purchase in storage.
      */
     public function store(Request $request, Product $product)
