@@ -20,22 +20,30 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-        
-        if (storedToken && storedUser) {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-          
-          // Postavi token za sve buduće axios zahteve
-          axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        }
+        // Dodaj malu pauzu da se aplikacija učita
+        setTimeout(() => {
+          try {
+            const storedToken = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
+            
+            if (storedToken && storedUser) {
+              setToken(storedToken);
+              setUser(JSON.parse(storedUser));
+              
+              // Postavi token za sve buduće axios zahteve
+              axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+            }
+          } catch (error) {
+            console.error('Greška pri učitavanju auth podataka:', error);
+            // Ako ima grešku, obriši sve iz localStorage
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          } finally {
+            setLoading(false);
+          }
+        }, 100);
       } catch (error) {
-        console.error('Greška pri učitavanju auth podataka:', error);
-        // Ako ima grešku, obriši sve iz localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      } finally {
+        console.error('Greška pri inicijalizaciji auth-a:', error);
         setLoading(false);
       }
     };
@@ -132,6 +140,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const purchaseProduct = async (productId) => {
+    try {
+      setLoading(true);
+      
+      const response = await axios.post(`http://127.0.0.1:8000/api/products/${productId}/purchase`);
+      
+      console.log('Kupovina uspešna:', response.data);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('Greška pri kupovini:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Greška pri kupovini proizvoda' 
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     token,
@@ -139,6 +166,7 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    purchaseProduct,
     isAuthenticated: !!user && !!token,
   };
 

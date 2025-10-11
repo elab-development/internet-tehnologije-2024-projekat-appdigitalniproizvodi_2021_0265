@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Button from '../components/Button';
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { token, isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,6 +37,24 @@ const ProductDetailsPage = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Funkcija za kupovinu proizvoda
+  const handlePurchase = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/products/${id}/purchase`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      alert('Proizvod uspešno kupljen! Hvala Vam.');
+    } catch (error) {
+      console.error('Greška pri kupovini:', error);
+      alert('Morate biti ulogovani da biste kupili proizvod.');
+    }
+  };
 
   // Breadcrumbs konfiguracija
   const breadcrumbs = [
@@ -117,12 +138,15 @@ const ProductDetailsPage = () => {
 
           {/* Dugmad */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              className="flex-1"
-              size="large"
-            >
-              Kupi proizvod
-            </Button>
+            {isAuthenticated && (
+              <Button 
+                onClick={handlePurchase}
+                className="flex-1"
+                size="large"
+              >
+                Kupi proizvod
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="large"

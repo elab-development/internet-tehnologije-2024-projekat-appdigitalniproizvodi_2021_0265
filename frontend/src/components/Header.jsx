@@ -30,9 +30,12 @@ const Header = () => {
             {isAuthenticated ? (
               // Korisnik je ulogovan
               <>
-                <span className="text-gray-700 font-medium">
+                <Link 
+                  to="/profile" 
+                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                >
                   Zdravo, {user?.name}!
-                </span>
+                </Link>
                 <Button 
                   onClick={logout}
                   variant="outline"
