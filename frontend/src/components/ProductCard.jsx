@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
   const imageUrl = `http://127.0.0.1:8000/storage/${product.preview_file_path}`;
   
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Link to={`/products/${product.id}`} className="block">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {/* Slika proizvoda */}
       <div className="aspect-w-16 aspect-h-12 bg-gray-200">
         <img
@@ -12,7 +14,7 @@ const ProductCard = ({ product }) => {
           alt={product.name}
           className="w-full h-48 object-cover"
           onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk0YTNiOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
           }}
         />
       </div>
@@ -37,7 +39,8 @@ const ProductCard = ({ product }) => {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Link>
   );
 };
 
