@@ -28,7 +28,7 @@ const Header = () => {
             </Link>
             
             {isAuthenticated ? (
-              // Korisnik je ulogovan
+              
               <>
                 <Link 
                   to="/profile" 
@@ -45,7 +45,7 @@ const Header = () => {
                 </Button>
               </>
             ) : (
-              // Korisnik nije ulogovan
+              
               <>
                 <Link 
                   to="/login" 

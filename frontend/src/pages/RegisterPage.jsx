@@ -25,7 +25,7 @@ const RegisterPage = () => {
       [name]: value
     }));
     
-    // Obriši grešku za to polje kada korisnik počne da kuca
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,

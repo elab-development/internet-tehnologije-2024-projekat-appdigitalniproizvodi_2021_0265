@@ -19,9 +19,10 @@ class ProductController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::paginate(15);
+        $perPage = $request->get('per_page', 15);
+        $products = Product::paginate($perPage);
         
         return ProductResource::collection($products);
     }

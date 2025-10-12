@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
   const imageUrl = `http://127.0.0.1:8000/storage/${product.preview_file_path}`;
 
   const handlePurchase = async (e) => {
-    e.preventDefault(); // Spreči navigaciju na detalje
+    e.preventDefault(); 
     e.stopPropagation();
 
     if (!isAuthenticated) {

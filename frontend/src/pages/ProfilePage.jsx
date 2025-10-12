@@ -7,30 +7,30 @@ import Button from '../components/Button';
 const ProfilePage = () => {
   const { user: authUser, logout, isAuthenticated, loading: authLoading } = useAuth();
   
-  // Koristi useApi hook za podatke o korisniku SAMO ako je korisnik autentifikovan
+  
   const { 
     data: userData, 
     loading: userLoading, 
     error: userError 
   } = useApi(isAuthenticated ? 'http://127.0.0.1:8000/api/me' : null);
   
-  // Koristi useApi hook za istoriju kupovina SAMO ako je korisnik autentifikovan
+  
   const { 
     data: purchasesData, 
     loading: purchasesLoading, 
     error: purchasesError 
   } = useApi(isAuthenticated ? 'http://127.0.0.1:8000/api/my-purchases' : null);
 
-  // Breadcrumbs konfiguracija
+  
   const breadcrumbs = [
     { label: 'Početna', to: '/' },
     { label: 'Moj profil', to: null }
   ];
 
-  // Loading stanje
+  
   const isLoading = authLoading || userLoading || purchasesLoading;
 
-  // Ako korisnik nije autentifikovan, preusmeri na login
+  
   if (!authLoading && !isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -58,7 +58,7 @@ const ProfilePage = () => {
     );
   }
 
-  // Error stanje
+
   if (userError || purchasesError) {
     return (
       <div className="container mx-auto px-4 py-8">

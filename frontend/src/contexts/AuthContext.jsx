@@ -14,36 +14,28 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Proveri localStorage prilikom prvog učitavanja
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        // Dodaj malu pauzu da se aplikacija učita
-        setTimeout(() => {
-          try {
-            const storedToken = localStorage.getItem('token');
-            const storedUser = localStorage.getItem('user');
-            
-            if (storedToken && storedUser) {
-              setToken(storedToken);
-              setUser(JSON.parse(storedUser));
-              
-              // Postavi token za sve buduće axios zahteve
-              axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-            }
-          } catch (error) {
-            console.error('Greška pri učitavanju auth podataka:', error);
-            // Ako ima grešku, obriši sve iz localStorage
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-          } finally {
-            setLoading(false);
-          }
-        }, 100);
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
+        if (storedToken && storedUser) {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+          
+          // Postavi token za sve buduće axios zahteve
+          axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        }
       } catch (error) {
-        console.error('Greška pri inicijalizaciji auth-a:', error);
+        console.error('Greška pri učitavanju auth podataka:', error);
+        // Ako ima grešku, obriši sve iz localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } finally {
         setLoading(false);
       }
     };

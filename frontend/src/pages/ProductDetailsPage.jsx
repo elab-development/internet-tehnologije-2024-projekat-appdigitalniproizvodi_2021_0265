@@ -38,7 +38,7 @@ const ProductDetailsPage = () => {
     }
   }, [id]);
 
-  // Funkcija za kupovinu proizvoda
+  
   const handlePurchase = async () => {
     try {
       const response = await axios.post(`http://127.0.0.1:8000/api/products/${id}/purchase`, {}, {
@@ -56,7 +56,7 @@ const ProductDetailsPage = () => {
     }
   };
 
-  // Breadcrumbs konfiguracija
+ 
   const breadcrumbs = [
     { label: 'Početna', to: '/' },
     { label: product ? product.name : 'Proizvod', to: null }
@@ -163,7 +163,6 @@ const ProductDetailsPage = () => {
             </h3>
             <div className="space-y-2 text-sm text-gray-600">
               <p><span className="font-medium">ID proizvoda:</span> #{product.id || 'N/A'}</p>
-              <p><span className="font-medium">Datum kreiranja:</span> {product.created_at ? new Date(product.created_at).toLocaleDateString('sr-RS') : 'N/A'}</p>
             </div>
           </div>
         </div>
