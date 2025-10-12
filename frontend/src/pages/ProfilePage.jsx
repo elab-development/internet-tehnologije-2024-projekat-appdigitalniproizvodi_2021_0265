@@ -18,14 +18,14 @@ const ProfilePage = () => {
       });
 
       // Create a blob URL and trigger download
-      const blob = new Blob([response.data]);
+      const blob = new Blob([response.data], { type: 'image/png' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       
       // Get filename from response headers or use default
       const contentDisposition = response.headers['content-disposition'];
-      let filename = 'download.pdf';
+      let filename = 'download.png';
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="(.+)"/);
         if (filenameMatch) {

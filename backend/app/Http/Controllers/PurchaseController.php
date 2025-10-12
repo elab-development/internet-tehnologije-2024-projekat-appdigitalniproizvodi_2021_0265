@@ -86,7 +86,7 @@ class PurchaseController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        // Return the file as a download response
-        return Storage::disk('public')->download($filePath);
+        // Return the file as a download response with proper headers
+        return Storage::disk('public')->download($filePath, basename($filePath));
     }
 }
