@@ -1,11 +1,56 @@
 import React from 'react';
+import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import useApi from '../hooks/useApi';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Button from '../components/Button';
 
 const ProfilePage = () => {
-  const { user: authUser, logout, isAuthenticated, loading: authLoading } = useAuth();
+  const { user: authUser, logout, isAuthenticated, loading: authLoading, token } = useAuth();
+
+  const handleDownload = async (purchaseId) => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/my-purchases/${purchaseId}/download`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        responseType: 'blob'
+      });
+
+      // Create a blob URL and trigger download
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Get filename from response headers or use default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'download.pdf';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      alert('Fajl je uspešno preuzet!');
+    } catch (error) {
+      console.error('Greška pri preuzimanju fajla:', error);
+      if (error.response?.status === 403) {
+        alert('Nemate pravo da preuzmete ovaj fajl.');
+      } else if (error.response?.status === 404) {
+        alert('Fajl nije pronađen.');
+      } else {
+        alert('Greška pri preuzimanju fajla. Pokušajte ponovo.');
+      }
+    }
+  };
   
   
   const { 
@@ -191,13 +236,20 @@ const ProfilePage = () => {
                       </div>
                     </div>
                     
-                    <div className="ml-4">
+                    <div className="ml-4 flex space-x-2">
                       <Button 
                         onClick={() => window.location.href = `/products/${purchase.product?.id}`}
                         variant="outline"
                         size="small"
                       >
                         Pogledaj
+                      </Button>
+                      <Button 
+                        onClick={() => handleDownload(purchase.id)}
+                        variant="primary"
+                        size="small"
+                      >
+                        Download
                       </Button>
                     </div>
                   </div>
