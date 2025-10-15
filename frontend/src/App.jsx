@@ -3,12 +3,14 @@ import { Routes, Route } from 'react-router-dom';
 import SimpleAppLayout from './layouts/SimpleAppLayout';
 import AdminLayout from './layouts/AdminLayout';
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminPurchasesPage from './pages/admin/AdminPurchasesPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 
@@ -17,6 +19,8 @@ function App() {
     <Routes>
       <Route path="/" element={<SimpleAppLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
         <Route path="products/:id" element={<ProductDetailsPage />} />
         <Route 
           path="profile" 
@@ -36,9 +40,9 @@ function App() {
           </AdminRoute>
         }
       >
-        <Route index element={<AdminDashboardPage />} />
-        <Route path="dashboard" element={<AdminDashboardPage />} />
+        <Route index element={<AdminProductsPage />} />
         <Route path="products" element={<AdminProductsPage />} />
+        <Route path="purchases" element={<AdminPurchasesPage />} />
       </Route>
       
       <Route path="/login" element={<LoginPage />} />
