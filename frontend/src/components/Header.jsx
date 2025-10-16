@@ -10,15 +10,13 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo/Naslov */}
           <Link 
             to="/" 
             className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
           >
             Jelisandia Web Store
           </Link>
-
-          {/* Navigacija */}
+          
           <nav className="flex items-center space-x-6">
             <Link 
               to="/" 
