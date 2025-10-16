@@ -97,12 +97,12 @@ const ProductDetailsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Breadcrumbs */}
+      
       <Breadcrumbs links={breadcrumbs} />
 
-      {/* Sadržaj proizvoda */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Slika proizvoda */}
+        
         <div className="space-y-4">
           <div className="aspect-w-16 aspect-h-12 bg-gray-200 rounded-lg overflow-hidden">
             <img
@@ -116,7 +116,7 @@ const ProductDetailsPage = () => {
           </div>
         </div>
 
-        {/* Informacije o proizvodu */}
+        
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -136,7 +136,7 @@ const ProductDetailsPage = () => {
             </p>
           </div>
 
-          {/* Dugmad */}
+          
           <div className="flex flex-col sm:flex-row gap-4">
             {isAuthenticated && (
               <Button 
@@ -156,15 +156,6 @@ const ProductDetailsPage = () => {
             </Button>
           </div>
 
-          {/* Dodatne informacije */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Informacije o proizvodu
-            </h3>
-            <div className="space-y-2 text-sm text-gray-600">
-              <p><span className="font-medium">ID proizvoda:</span> #{product.id || 'N/A'}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
