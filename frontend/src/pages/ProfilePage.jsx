@@ -2,11 +2,11 @@ import React from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import useApi from '../hooks/useApi';
-import Breadcrumbs from '../components/Breadcrumbs';
 import Button from '../components/Button';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const ProfilePage = () => {
-  const { user: authUser, logout, isAuthenticated, loading: authLoading, token } = useAuth();
+  const { isAuthenticated, loading: authLoading, token } = useAuth();
 
   const handleDownload = async (purchaseId) => {
     try {
@@ -17,13 +17,11 @@ const ProfilePage = () => {
         responseType: 'blob'
       });
 
-      // Create a blob URL and trigger download
       const blob = new Blob([response.data], { type: 'image/png' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       
-      // Get filename from response headers or use default
       const contentDisposition = response.headers['content-disposition'];
       let filename = 'download.png';
       if (contentDisposition) {
@@ -53,18 +51,9 @@ const ProfilePage = () => {
   };
   
   
-  const { 
-    data: userData, 
-    loading: userLoading, 
-    error: userError 
-  } = useApi(isAuthenticated ? 'http://127.0.0.1:8000/api/me' : null);
   
   
-  const { 
-    data: purchasesData, 
-    loading: purchasesLoading, 
-    error: purchasesError 
-  } = useApi(isAuthenticated ? 'http://127.0.0.1:8000/api/my-purchases' : null);
+  const { data: purchasesData, loading: purchasesLoading, error: purchasesError } = useApi(isAuthenticated ? 'http://127.0.0.1:8000/api/my-purchases' : null);
 
   
   const breadcrumbs = [
@@ -73,7 +62,7 @@ const ProfilePage = () => {
   ];
 
   
-  const isLoading = authLoading || userLoading || purchasesLoading;
+  const isLoading = authLoading || purchasesLoading;
 
   
   if (!authLoading && !isAuthenticated) {
@@ -104,94 +93,26 @@ const ProfilePage = () => {
   }
 
 
-  if (userError || purchasesError) {
+  if (purchasesError) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Breadcrumbs links={breadcrumbs} />
         <div className="text-center py-12">
           <p className="text-red-600 text-lg">
-            Greška pri učitavanju podataka: {userError?.message || purchasesError?.message}
+            Greška pri učitavanju podataka: {purchasesError?.message}
           </p>
         </div>
       </div>
     );
   }
 
-  const user = userData?.user || authUser;
   const purchases = purchasesData?.data || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Breadcrumbs */}
       <Breadcrumbs links={breadcrumbs} />
 
       <div className="max-w-4xl mx-auto">
-        {/* Informacije o korisniku */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Moj profil
-            </h1>
-            <Button 
-              onClick={logout}
-              variant="outline"
-              size="medium"
-            >
-              Odjavi se
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                Lični podaci
-              </h2>
-              <div className="space-y-2">
-                <p>
-                  <span className="font-medium text-gray-700">Ime:</span>
-                  <span className="ml-2 text-gray-900">{user?.name || 'N/A'}</span>
-                </p>
-                <p>
-                  <span className="font-medium text-gray-700">Email:</span>
-                  <span className="ml-2 text-gray-900">{user?.email || 'N/A'}</span>
-                </p>
-                <p>
-                  <span className="font-medium text-gray-700">Uloga:</span>
-                  <span className="ml-2 text-gray-900 capitalize">{user?.role || 'N/A'}</span>
-                </p>
-                <p>
-                  <span className="font-medium text-gray-700">Član od:</span>
-                  <span className="ml-2 text-gray-900">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('sr-RS') : 'N/A'}
-                  </span>
-                </p>
-              </div>
-            </div>
-            
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                Statistike
-              </h2>
-              <div className="space-y-2">
-                <p>
-                  <span className="font-medium text-gray-700">Ukupno kupovina:</span>
-                  <span className="ml-2 text-gray-900">{purchases.length}</span>
-                </p>
-                <p>
-                  <span className="font-medium text-gray-700">Ukupno potrošeno:</span>
-                  <span className="ml-2 text-gray-900">
-                    ${purchases.reduce((total, purchase) => {
-                      const price = parseFloat(purchase.product?.price || 0);
-                      return total + price;
-                    }, 0).toFixed(2)}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Istorija kupovina */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Istorija kupovina
