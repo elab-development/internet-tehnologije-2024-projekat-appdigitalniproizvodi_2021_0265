@@ -28,63 +28,61 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header sekcija */}
+    <div className="p-8">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">
-          Jelisandia
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Jelisandia je web prodavnica digitalnih slika iz kolekcije The Peepsicles.
-        </p>
+        <h1 className="text-4xl font-bold text-center mb-12">Istraži kolekciju</h1>
       </div>
 
-      {/* Loading stanje */}
       {loading && (
         <div className="text-center py-12">
           <p className="text-gray-600 text-lg">Učitava se...</p>
         </div>
       )}
 
-      {/* Grid proizvoda */}
       {!loading && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
-          {/* Paginacija */}
           {pagination && pagination.links && (
-            <div className="flex justify-center items-center space-x-4 mt-8">
-              <Button
-                onClick={() => fetchProducts(pagination.links.prev)}
-                disabled={!pagination.links.prev}
-                variant="outline"
-                size="medium"
-              >
-                Prethodna
-              </Button>
-              
-              <span className="text-gray-600">
-                Strana {pagination.current_page} od {pagination.last_page}
-              </span>
-              
-              <Button
-                onClick={() => fetchProducts(pagination.links.next)}
-                disabled={!pagination.links.next}
-                variant="outline"
-                size="medium"
-              >
-                Sledeća
-              </Button>
+            <div className="flex flex-col items-center mt-12 space-y-4">
+              <div className="flex items-center space-x-6">
+                <Button
+                  onClick={() => fetchProducts(pagination.links.prev)}
+                  disabled={!pagination.links.prev}
+                  className={`px-5 py-2 rounded-md transition-all duration-200 ${
+                    !pagination.links.prev 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-gray-800 text-white hover:bg-gray-700'
+                  }`}
+                >
+                  ← Prethodna
+                </Button>
+                
+                <span className="text-gray-600 font-medium px-4 py-2 bg-gray-100 rounded-lg">
+                  Strana {pagination.current_page} od {pagination.last_page}
+                </span>
+                
+                <Button
+                  onClick={() => fetchProducts(pagination.links.next)}
+                  disabled={!pagination.links.next}
+                  className={`px-5 py-2 rounded-md transition-all duration-200 ${
+                    !pagination.links.next 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-gray-800 text-white hover:bg-gray-700'
+                  }`}
+                >
+                  Sledeća →
+                </Button>
+              </div>
             </div>
           )}
         </>
       )}
 
-      {/* Prazan stanje */}
       {!loading && products.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-600 text-lg">Nema dostupnih proizvoda.</p>
