@@ -10,11 +10,12 @@ const AdminProductsPage = () => {
   const { token } = useContext(AuthContext);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('name');
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const { data: productsData, loading, error, refetch } = useApi('http://127.0.0.1:8000/api/products?per_page=1000');
   
-
   const products = productsData?.data || [];
 
 
@@ -59,15 +60,38 @@ const AdminProductsPage = () => {
     }
   };
 
+  const handleFilter = () => {
+    let filtered = [...products];
+    
+    // Pretraživanje po nazivu
+    if (searchTerm) {
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Sortiranje
+    if (sortBy === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'price') {
+      filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    }
+    
+    setFilteredProducts(filtered);
+  };
+
+  // Inicijalno postavljanje kada se učitaju proizvodi
+  React.useEffect(() => {
+    if (products.length > 0) {
+      setFilteredProducts(products);
+    }
+  }, [products]);
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Upravljanje Proizvodima</h1>
-            <p className="mt-2 text-gray-600">
-              Uredjivanje proizvoda
-            </p>
           </div>
           <Button 
             variant="primary" 
@@ -104,6 +128,8 @@ const AdminProductsPage = () => {
             <input
               type="text"
               placeholder="Naziv proizvoda..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -111,13 +137,20 @@ const AdminProductsPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sortiraj po
             </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select 
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="name">Naziv (A-Z)</option>
               <option value="price">Cena (najjeftiniji)</option>
             </select>
           </div>
           <div className="flex items-end">
-            <button className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
+            <button 
+              onClick={handleFilter}
+              className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+            >
               Filtriraj
             </button>
           </div>
@@ -166,14 +199,14 @@ const AdminProductsPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {products.length === 0 ? (
+                  {filteredProducts.length === 0 ? (
                     <tr>
                       <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
                         Nema proizvoda za prikaz
                       </td>
                     </tr>
                   ) : (
-                    products.map((product) => (
+                    filteredProducts.map((product) => (
                       <tr key={product.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {product.id}
@@ -236,13 +269,6 @@ const AdminProductsPage = () => {
         </div>
       )}
 
-      {!loading && !error && (
-        <div className="mt-6 bg-gray-50 rounded-lg p-4">
-          <div className="text-sm text-gray-600">
-            Ukupno proizvoda: <span className="font-medium text-gray-900">{products.length}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -148,7 +148,6 @@ const AddProductForm = ({ onProductAdded }) => {
             required
           />
           
-          {/* Opis proizvoda */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Opis proizvoda
@@ -168,7 +167,6 @@ const AddProductForm = ({ onProductAdded }) => {
             )}
           </div>
           
-          {/* Cena */}
           <Input
             label="Cena"
             type="number"
@@ -180,8 +178,7 @@ const AddProductForm = ({ onProductAdded }) => {
             error={errors.price}
             required
           />
-          
-          {/* Slika */}
+         
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Slika proizvoda
@@ -206,7 +203,6 @@ const AddProductForm = ({ onProductAdded }) => {
             )}
           </div>
           
-          {/* Dugmići */}
           <div className="flex space-x-4 pt-4">
             <Button
               type="submit"
