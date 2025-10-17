@@ -1,6 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import useApi from '../../hooks/useApi';
 
 const AdminDashboardPage = () => {
+  const navigate = useNavigate();
+
+  
+  const { data: productsData, loading: productsLoading } = useApi('http://127.0.0.1:8000/api/products?per_page=1000');
+  const { data: usersData, loading: usersLoading } = useApi('http://127.0.0.1:8000/api/users');
+  const { data: purchasesData, loading: purchasesLoading } = useApi('http://127.0.0.1:8000/api/purchases');
+
+  const handleViewPurchases = () => {
+    
+    navigate('/admin/products');
+  };
+
+  const productsCount = productsData?.data?.length || 0;
+  const usersCount = usersData?.data?.length || 0;
+  const purchasesCount = purchasesData?.data?.length || 0;
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
@@ -94,7 +112,10 @@ const AdminDashboardPage = () => {
           <div className="bg-white p-6 shadow rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-2">Pregled kupovina</h3>
             <p className="text-gray-600 mb-4">Pogledaj sve kupovine korisnika</p>
-            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+            <button 
+              onClick={handleViewPurchases}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
               Pregled kupovina
             </button>
           </div>
